@@ -51,9 +51,6 @@ namespace Glasspane.Shell
         private (bool pinned, bool active)? _revealState;
         private readonly DispatcherTimer _blurRefresh;
         private bool _wallpaperBlurOn;
-        private bool _captureBlurOn;
-        private bool _captureExcluded;
-        private readonly DispatcherTimer _captureTimer;
 
         public WidgetWindow(WidgetSettings settings, IEnumerable<IWidget> widgets, WidgetManager manager)
         {
@@ -72,13 +69,6 @@ namespace Glasspane.Shell
             // While moving or resizing, the wallpaper blur follows at up to ~20 updates a second
             _blurRefresh = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
             _blurRefresh.Tick += (_, _) => { _blurRefresh.Stop(); UpdateBlur(); };
-
-            // Window mode blur: re-snapshot what's behind the window now and then
-            _captureTimer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(2.5) };
-            _captureTimer.Tick += (_, _) => UpdateBlur();
-            IsVisibleChanged += (_, _) => UpdateBlur();
-            StateChanged += (_, _) => UpdateBlur();
-            Activated += (_, _) => UpdateBlur();
 
             RestorePlacement();
             LockToggle.IsChecked = settings.Locked;
@@ -325,108 +315,43 @@ namespace Glasspane.Shell
 
         private void QueueBlurRefresh()
         {
-            if ((_wallpaperBlurOn || _captureBlurOn) && !_blurRefresh.IsEnabled) _blurRefresh.Start();
+            if (_wallpaperBlurOn && !_blurRefresh.IsEnabled) _blurRefresh.Start();
         }
 
         /// <summary>
-        /// Blur is drawn by the widget itself so its strength can be anything. On the desktop it
-        /// blurs a copy of the wallpaper behind it. As a window, it blurs a snapshot of whatever is
-        /// behind it, refreshed when it moves and every second or two (more often while you're
-        /// using it). Windows' own fixed-strength blur is only used if neither is possible.
+        /// On the desktop, blur is drawn from a copy of the wallpaper behind the widget, so its
+        /// strength can be anything. As a window there may be other windows behind it, so it uses
+        /// Windows' own blur, which has one fixed strength.
         /// </summary>
         private void UpdateBlur()
         {
             if (_hwnd == IntPtr.Zero) return;
             double strength = Math.Clamp(CurrentBlur, 0, 1);
-
             _wallpaperBlurOn = strength > 0 && _pinned && ShowWallpaperBlur(strength);
-            bool wantCapture = strength > 0 && !_pinned && IsVisible && WindowState == WindowState.Normal && ScreenCapture.IsSupported;
-            SetCaptureMode(wantCapture);
-            _captureBlurOn = wantCapture && ShowCapturedBlur(strength);
-
-            if (!_wallpaperBlurOn && !_captureBlurOn) BlurHost.Visibility = Visibility.Collapsed;
-            Backdrop.SetBlur(_hwnd, strength > 0 && !_wallpaperBlurOn && !_captureBlurOn);
+            if (!_wallpaperBlurOn) BlurHost.Visibility = Visibility.Collapsed;
+            Backdrop.SetBlur(_hwnd, strength > 0 && !_wallpaperBlurOn);
         }
-
-        /// <summary>
-        /// Window mode with blur: hides this window from screen capture (so snapshots see through it)
-        /// and keeps the snapshot fresh. Turned off again for no blur or desktop mode, so the
-        /// widget shows up normally in screenshots then.
-        /// </summary>
-        private void SetCaptureMode(bool on)
-        {
-            if (on != _captureExcluded)
-            {
-                _captureExcluded = on && ScreenCapture.SetExcluded(_hwnd, true);
-                if (!on) ScreenCapture.SetExcluded(_hwnd, false);
-                // The exclusion takes effect on the next screen refresh; snapshot again just after
-                if (_captureExcluded) Dispatcher.InvokeAsync(async () =>
-                {
-                    await System.Threading.Tasks.Task.Delay(120);
-                    UpdateBlur();
-                });
-            }
-
-            bool run = on && _captureExcluded;
-            if (run)
-            {
-                _captureTimer.Interval = TimeSpan.FromMilliseconds(IsActive || IsMouseOver ? 1000 : 2500);
-                if (!_captureTimer.IsEnabled) _captureTimer.Start();
-            }
-            else
-            {
-                _captureTimer.Stop();
-            }
-        }
-
-        private bool ShowCapturedBlur(double strength)
-        {
-            if (!_captureExcluded || WindowState != WindowState.Normal) return false;
-            double radius = BlurRadius(strength);
-            var dpi = VisualTreeHelper.GetDpi(this);
-            int pad = (int)Math.Ceiling(radius * dpi.DpiScaleX);
-            if (!GetWindowRect(_hwnd, out RECT r)) return false;
-            var area = new RECT { Left = r.Left - pad, Top = r.Top - pad, Right = r.Right + pad, Bottom = r.Bottom + pad };
-
-            var image = ScreenCapture.Capture(area, out RECT got);
-            if (image == null) return false;
-
-            // Where the area sits within what was captured (bits past the screen edge are left empty)
-            double gw = got.Right - got.Left, gh = got.Bottom - got.Top;
-            var viewbox = new Rect((area.Left - got.Left) / gw, (area.Top - got.Top) / gh,
-                                   (area.Right - area.Left) / gw, (area.Bottom - area.Top) / gh);
-            ShowBlurLayer(image, viewbox, Tint, radius, pad / dpi.DpiScaleX);
-            return true;
-        }
-
-        private static double BlurRadius(double strength) => 3 + strength * 57; // DIPs
 
         private bool ShowWallpaperBlur(double strength)
         {
-            double radius = BlurRadius(strength);
+            double radius = 4 + strength * 56; // in DIPs
             var dpi = VisualTreeHelper.GetDpi(this);
-            int pad = (int)Math.Ceiling(radius * dpi.DpiScaleX); // extra around the edges so they blur cleanly
+            int pad = (int)Math.Ceiling(radius * dpi.DpiScaleX); // extra wallpaper around the edges so they blur cleanly
             if (!GetWindowRect(_hwnd, out RECT r)) return false;
             var area = new RECT { Left = r.Left - pad, Top = r.Top - pad, Right = r.Right + pad, Bottom = r.Bottom + pad };
 
             var slice = Wallpaper.GetSlice(area);
             if (slice == null) return false;
-            ShowBlurLayer(slice.Image, slice.Viewbox, slice.Background, radius, pad / dpi.DpiScaleX);
-            return true;
-        }
 
-        /// <summary>Shows an image (wallpaper or snapshot) behind the panel, blurred.</summary>
-        private void ShowBlurLayer(ImageSource? image, Rect viewbox, Color background, double radius, double padDip)
-        {
-            var fill = new SolidColorBrush(background);
+            var fill = new SolidColorBrush(slice.Background);
             fill.Freeze();
             WallpaperFill.Fill = fill;
 
-            if (image != null)
+            if (slice.Image != null)
             {
-                var brush = new ImageBrush(image)
+                var brush = new ImageBrush(slice.Image)
                 {
-                    Viewbox = viewbox,
+                    Viewbox = slice.Viewbox,
                     ViewboxUnits = BrushMappingMode.RelativeToBoundingBox,
                     Stretch = Stretch.Fill,
                     TileMode = TileMode.None
@@ -439,7 +364,7 @@ namespace Glasspane.Shell
                 WallpaperImage.Fill = null;
             }
 
-            BlurLayer.Margin = new Thickness(-padDip);
+            BlurLayer.Margin = new Thickness(-pad / dpi.DpiScaleX);
             if (BlurLayer.Effect is BlurEffect fx)
                 fx.Radius = radius;
             else
@@ -449,6 +374,7 @@ namespace Glasspane.Shell
             BlurLayer.CacheMode ??= new BitmapCache();
             BlurHost.Clip = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight), 12, 12);
             BlurHost.Visibility = Visibility.Visible;
+            return true;
         }
 
         private void ApplyLook(bool animate)

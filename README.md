@@ -14,7 +14,7 @@ Glasspane then runs in the system tray.
 ## Settings and widgets
 
 When Glasspane starts, the **Settings** window opens with a tile for each widget. Click a tile to turn
-that widget on or off (lit up with a tick = on). Tiles marked *Coming soon* are planned widgets.
+that widget on or off (lit up with a tick = on).
 It also has **Start Glasspane with Windows** and **Show this window when Glasspane starts**.
 Open it again any time from the tray icon (right-click → Settings and widgets), or by launching Glasspane again.
 
@@ -61,6 +61,21 @@ If it's buried under windows, Ctrl+Alt+V lifts it to the front. It sinks back in
 - **App volumes**: opens a slider and mute button for each app that's making sound.
 
 It stays in sync if you change the volume elsewhere, e.g. with keyboard media keys or Windows' own menu.
+
+## System
+
+Live readings with a one-minute history graph for each:
+- **CPU**: total usage. Details add a bar per core, processes, threads and up time.
+- **Memory**: how much is in use. Details add available, committed and cached memory (as in Task Manager).
+- **Disk**: the busiest disk's activity and total read/write speed. Details add each disk
+  separately and free space on each drive.
+- **GPU**: graphics usage (like Task Manager, the busiest engine). Details add dedicated and shared
+  graphics memory and the main engines (3D, video decode, copy…).
+
+The options button (top right of the widget) has a **Show** and a **Details** switch for each reading,
+plus a switch for the history graphs (off = a simple bar). Readings that are off aren't measured at all.
+It updates every second while your mouse is over it, every 2 seconds otherwise, and stops while hidden.
+CPU and GPU temperatures aren't included: Windows doesn't provide them without extra drivers.
 
 ## Together or separate
 
@@ -130,6 +145,7 @@ Themes/      Shared styles (buttons, chips, toggle switch, slider, scrollbars, m
 Widgets/
   Clipboard/ Clipboard listener, capture, SQLite store, UI
   Audio/     Volume, level meter, output switching, per-app volumes (NAudio)
+  SystemMonitor/ CPU, memory, disk and GPU readings (Windows performance counters)
 App.xaml.cs  Start-up, tray icon, global shortcut, widget registration
 ```
 

@@ -10,6 +10,7 @@ using Glasspane.Native;
 using Glasspane.Shell;
 using Glasspane.Widgets.Audio;
 using Glasspane.Widgets.Clipboard;
+using Glasspane.Widgets.SystemMonitor;
 using WinForms = System.Windows.Forms;
 
 namespace Glasspane
@@ -65,6 +66,7 @@ namespace Glasspane
             _manager = new WidgetManager(_settings);
             _manager.Register(new ClipboardWidget(context, _settings.Current.ClipboardHistoryLimit));
             TryRegister(() => new AudioWidget());
+            TryRegister(() => new SystemWidget(context));
             _manager.LayoutChanged += (_, _) => RefreshTrayMenu();
             _manager.Start();
 

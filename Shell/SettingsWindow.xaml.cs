@@ -48,15 +48,6 @@ namespace Glasspane.Shell
         private readonly List<WidgetTile> _tiles;
         private bool _allowClose;
 
-        // Ideas planned for later; shown so the layout has room for them
-        private static readonly (string title, string description, string glyph)[] ComingSoon =
-        {
-            ("Claude", "Ask quick questions without opening a browser", ""),
-            ("Phone", "Battery and notifications from your phone", ""),
-            ("Headphones", "AirPods battery for each bud and the case", ""),
-            ("Proton VPN", "Connect, disconnect and switch servers", ""),
-        };
-
         public SettingsWindow(WidgetManager manager, SettingsStore store)
         {
             InitializeComponent();
@@ -65,7 +56,6 @@ namespace Glasspane.Shell
 
             _tiles = manager.AllWidgets
                 .Select(w => new WidgetTile { Id = w.Id, Title = w.Title, Description = w.Description, Glyph = w.Glyph })
-                .Concat(ComingSoon.Select(c => new WidgetTile { Title = c.title, Description = c.description, Glyph = c.glyph, Available = false }))
                 .ToList();
             Tiles.ItemsSource = _tiles;
             RefreshTiles();

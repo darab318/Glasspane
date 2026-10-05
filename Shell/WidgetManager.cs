@@ -59,18 +59,13 @@ namespace Glasspane.Shell
                 Create(ws, widgets);
             }
 
+            // A widget added in an update gets its own window, so it doesn't squeeze into an
+            // existing one. Drag it onto another window to combine them.
             foreach (var widget in _widgets.Values.Where(w => !placed.Contains(w.Id)))
             {
-                if (_windows.Count > 0)
-                {
-                    _windows[0].AddWidget(widget, 0);
-                }
-                else
-                {
-                    var ws = new WidgetSettings { Id = NewWindowId(widget), WidgetIds = { widget.Id } };
-                    settings.Windows.Add(ws);
-                    Create(ws, new[] { widget });
-                }
+                var ws = new WidgetSettings { Id = NewWindowId(widget), WidgetIds = { widget.Id } };
+                settings.Windows.Add(ws);
+                Create(ws, new[] { widget });
             }
 
             Save();
