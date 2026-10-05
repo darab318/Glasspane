@@ -1,0 +1,155 @@
+<Window x:Class="Glasspane.Shell.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Glasspane settings"
+        Width="580" SizeToContent="Height"
+        WindowStyle="None" ResizeMode="NoResize"
+        AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Foreground="{StaticResource TextBrush}"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        UseLayoutRounding="True">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!-- A widget tile: click to turn the widget on or off -->
+        <Style x:Key="Tile" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Width" Value="168" />
+            <Setter Property="Height" Value="138" />
+            <Setter Property="Margin" Value="0,0,12,12" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" CornerRadius="12" Background="#12FFFFFF"
+                                BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" Padding="14,12">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock x:Name="Icon" Text="{Binding Glyph}" FontFamily="{StaticResource IconFont}"
+                                           FontSize="24" Opacity="0.85" HorizontalAlignment="Left" />
+
+                                <!-- Tick badge when on -->
+                                <Border x:Name="Badge" Width="20" Height="20" CornerRadius="10" HorizontalAlignment="Right"
+                                        VerticalAlignment="Top" Background="{StaticResource AccentBrush}" Visibility="Collapsed">
+                                    <TextBlock Text="&#xE73E;" FontFamily="{StaticResource IconFont}" FontSize="10"
+                                               Foreground="#FF0B1220" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <TextBlock Grid.Row="1" Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" Margin="0,10,0,2" />
+                                <TextBlock Grid.Row="2" Text="{Binding Description}" FontSize="11" TextWrapping="Wrap"
+                                           Foreground="{StaticResource SubtleTextBrush}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock x:Name="Status" Grid.Row="3" Text="{Binding Status}" FontSize="11"
+                                           FontWeight="SemiBold" Opacity="0.7" Margin="0,6,0,0" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#24FFFFFF" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsOn}" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#2E7AB4FF" />
+                                <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Badge" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="Icon" Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Icon" Property="Opacity" Value="1" />
+                                <Setter TargetName="Status" Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Status" Property="Opacity" Value="1" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Available}" Value="False">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.45" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DoneButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF0B1220" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{StaticResource AccentBrush}" CornerRadius="8" Padding="22,8">
+                            <ContentPresenter HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="14" Background="#EB161A22" BorderThickness="1" Margin="0">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#4DFFFFFF" Offset="0" />
+                <GradientStop Color="#14FFFFFF" Offset="1" />
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+
+        <StackPanel Margin="26,20,14,22">
+
+            <!-- Header (drag to move) -->
+            <Grid Background="#01000000" MouseLeftButtonDown="Header_MouseLeftButtonDown" Margin="0,0,12,18">
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="40" Height="40" CornerRadius="10" Background="#26FFFFFF" Margin="0,0,14,0">
+                        <TextBlock Text="&#xE8A9;" FontFamily="{StaticResource IconFont}" FontSize="18"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Glasspane" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="Choose which widgets to show" FontSize="12" Foreground="{StaticResource SubtleTextBrush}" />
+                    </StackPanel>
+                </StackPanel>
+                <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
+                        VerticalAlignment="Top" ToolTip="Close" Click="Close_Click" />
+            </Grid>
+
+            <!-- Widget tiles -->
+            <ItemsControl x:Name="Tiles" Focusable="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Style="{StaticResource Tile}" Click="Tile_Click" ToolTip="{Binding Hint}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="Tip: drag one widget window onto another to combine them. Use the split button on a widget's header to separate them again."
+                       FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource SubtleTextBrush}" Margin="0,2,12,18" />
+
+            <Border Height="1" Background="{StaticResource StrokeBrush}" Margin="0,0,12,16" />
+
+            <TextBlock Text="General" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" />
+            <CheckBox x:Name="StartupToggle" Style="{StaticResource ToggleSwitch}" Content="Start Glasspane with Windows"
+                      FontSize="12" Margin="0,0,12,10" Click="StartupToggle_Click" />
+            <CheckBox x:Name="ShowOnStartToggle" Style="{StaticResource ToggleSwitch}" Content="Show this window when Glasspane starts"
+                      FontSize="12" Margin="0,0,12,4" Click="ShowOnStartToggle_Click" />
+            <TextBlock Text="You can always open it again from the Glasspane icon in the system tray."
+                       FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" Margin="0,0,12,18" />
+
+            <Button Style="{StaticResource DoneButton}" Content="Done" HorizontalAlignment="Right"
+                    Margin="0,0,12,0" Click="Close_Click" />
+        </StackPanel>
+    </Border>
+</Window>

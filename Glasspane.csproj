@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- WinForms is only used for the system tray icon -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Glasspane</RootNamespace>
+    <AssemblyName>Glasspane</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>0.1.0</Version>
+    <Product>Glasspane</Product>
+    <Description>Desktop widgets that live as windows or as part of your desktop.</Description>
+    <!-- Lets the project be restored/built from non-Windows machines too -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Build output folder made by Build.bat -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);App\**</DefaultItemExcludes>
+
+    <!-- Lightweight runtime settings -->
+    <!-- Pre-compiled to native code: faster start-up, no JIT work or JIT memory at launch -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- A desktop widget has a tiny heap; skip the background GC thread and its memory -->
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <!-- Only ship English resources -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
+    <!-- Windows Core Audio (volume, devices, per-app sessions) -->
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>
