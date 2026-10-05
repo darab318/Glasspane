@@ -28,6 +28,7 @@ namespace Glasspane.Widgets.NowPlaying
         private DateTimeOffset _positionAt;
         private bool _playing;
         private int _artVersion;
+        private string _trackKey = "";
 
         public NowPlayingView()
         {
@@ -121,6 +122,15 @@ namespace Glasspane.Widgets.NowPlaying
 
             IdleState.Visibility = Visibility.Collapsed;
             PlayingState.Visibility = Visibility.Visible;
+            // A different track: forget the old length so a new one is picked up
+            string key = props.Title + "\u0001" + props.Artist + "\u0001" + session.SourceAppUserModelId;
+            if (key != _trackKey)
+            {
+                _trackKey = key;
+                _duration = TimeSpan.Zero;
+                RefreshTimeline();
+            }
+
             TitleText.Text = string.IsNullOrWhiteSpace(props.Title) ? "Unknown title" : props.Title;
             string artist = !string.IsNullOrWhiteSpace(props.Artist) ? props.Artist : props.AlbumArtist;
             ArtistText.Text = artist ?? "";
@@ -191,13 +201,28 @@ namespace Glasspane.Widgets.NowPlaying
             try
             {
                 var timeline = session.GetTimelineProperties();
-                _duration = timeline.EndTime - timeline.StartTime;
-                _position = timeline.Position - timeline.StartTime;
-                _positionAt = timeline.LastUpdatedTime.Year < 2000 ? DateTimeOffset.Now : timeline.LastUpdatedTime;
+                var duration = timeline.EndTime - timeline.StartTime;
+
+                // While seeking, some apps (Firefox in particular) briefly report a length of zero and
+                // then don't send another update until play/pause. Keep the length we already know
+                // for this track instead of hiding the bar.
+                if (duration <= TimeSpan.Zero)
+                {
+                    if (_duration > TimeSpan.Zero) { UpdateProgress(); return; }
+                }
+                else
+                {
+                    _duration = duration;
+                    var position = timeline.Position - timeline.StartTime;
+                    if (position < TimeSpan.Zero) position = TimeSpan.Zero;
+                    if (position > duration) position = duration;
+                    _position = position;
+                    _positionAt = timeline.LastUpdatedTime.Year < 2000 ? DateTimeOffset.Now : timeline.LastUpdatedTime;
+                }
             }
             catch
             {
-                _duration = TimeSpan.Zero;
+                // Couldn't read it this time: keep what we had
             }
             ProgressRow.Visibility = _duration > TimeSpan.Zero ? Visibility.Visible : Visibility.Collapsed;
             UpdateProgressTimer();
@@ -240,6 +265,7 @@ namespace Glasspane.Widgets.NowPlaying
             PlayingState.Visibility = Visibility.Collapsed;
             _playing = false;
             _duration = TimeSpan.Zero;
+            _trackKey = "";
             ArtImage.Background = null;
             UpdateProgressTimer();
         }
