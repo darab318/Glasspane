@@ -11,6 +11,11 @@ using Glasspane.Shell;
 using Glasspane.Widgets.Audio;
 using Glasspane.Widgets.Clipboard;
 using Glasspane.Widgets.SystemMonitor;
+using Glasspane.Widgets.NowPlaying;
+using Glasspane.Widgets.Time;
+using Glasspane.Widgets.Weather;
+using Glasspane.Widgets.Notes;
+using Glasspane.Widgets.Shelf;
 using WinForms = System.Windows.Forms;
 
 namespace Glasspane
@@ -67,6 +72,11 @@ namespace Glasspane
             _manager.Register(new ClipboardWidget(context, _settings.Current.ClipboardHistoryLimit));
             TryRegister(() => new AudioWidget());
             TryRegister(() => new SystemWidget(context));
+            TryRegister(() => new NowPlayingWidget());
+            TryRegister(() => new ClockWidget(context));
+            TryRegister(() => new WeatherWidget(context));
+            TryRegister(() => new NotesWidget(context));
+            TryRegister(() => new ShelfWidget());
             _manager.LayoutChanged += (_, _) => RefreshTrayMenu();
             _manager.Start();
 

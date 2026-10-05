@@ -14,7 +14,7 @@ Glasspane then runs in the system tray.
 ## Settings and widgets
 
 When Glasspane starts, the **Settings** window opens with a tile for each widget. Click a tile to turn
-that widget on or off (lit up with a tick = on).
+that widget on or off (lit up with a tick = on). Widgets added in an update start switched off, so turn on the ones you want here.
 **Appearance for all widgets** sets Background and Blur for every widget at once. Pick
 *On the desktop* or *As windows* first, since each mode has its own look. If widgets currently differ
 the value shows *Mixed*; moving the slider makes them all the same. Each widget's own ⚙ menu
@@ -80,6 +80,43 @@ The options button (top right of the widget) has a **Show** and a **Details** sw
 plus a switch for the history graphs (off = a simple bar). Readings that are off aren't measured at all.
 It updates every second while your mouse is over it, every 2 seconds otherwise, and stops while hidden.
 CPU and GPU temperatures aren't included: Windows doesn't provide them without extra drivers.
+
+## Clock
+
+A large clock with the date (options: seconds, 12/24-hour). Underneath, chips open three sections;
+click an open chip again to close it:
+- **Alarms**: type a time (07:30, 7.30 or 7:30pm), an optional label, and pick days to repeat (none = once).
+  When an alarm goes off, a pop-up appears in the bottom-right corner on top of everything, with the
+  Windows alarm sound, **Snooze 5 min** and **Dismiss**. Alarms work even while the clock widget is turned off.
+- **Timer**: presets (1 min – 1 hour) or type your own (25 = 25 minutes, 1:30 = 1 min 30 s, 1:00:00 = 1 hour).
+  Pause, resume, reset. Same pop-up when it finishes.
+- **Stopwatch**: start/stop, laps, reset.
+
+The clock redraws once a minute (once a second with seconds on); nothing ticks faster unless the
+timer or stopwatch is open and running.
+
+## Now Playing
+
+The song or video that's playing in Spotify, YouTube (in your browser) and other apps, with album art,
+progress (click to jump) and previous / play-pause / next. It uses Windows' own media controls, so it
+updates only when the track or play state changes.
+
+## Weather
+
+Current conditions, the next 6 hours and the next 5 days, from Open-Meteo (free, no account). Set your
+town in the ⚙ menu (it starts on London), plus °C/°F, mph/km/h, and whether to show the hours and days.
+It downloads a few kilobytes every 30 minutes, and only while the widget is showing.
+
+## Notes
+
+Sticky notes that save as you type. Add more notes with **+**; switch between them with the chips.
+
+## Screenshots & Downloads
+
+Your newest screenshots (from Win + Print Screen, Snipping Tool and ShareX) and downloads.
+- **Click** to copy (the picture itself for images), **drag** straight into Discord, a browser or a folder,
+  **double-click** to open, **right-click** to open, show in folder or delete (to the Recycle Bin).
+- Windows tells the shelf when files appear, so it never scans folders on a timer.
 
 ## Together or separate
 
@@ -150,6 +187,11 @@ Widgets/
   Clipboard/ Clipboard listener, capture, SQLite store, UI
   Audio/     Volume, level meter, output switching, per-app volumes (NAudio)
   SystemMonitor/ CPU, memory, disk and GPU readings (Windows performance counters)
+  Time/      Clock, alarms, timer, stopwatch
+  NowPlaying/ Media info and controls (Windows media session API)
+  Weather/   Open-Meteo forecast
+  Notes/     Sticky notes
+  Shelf/     Screenshots and downloads
 App.xaml.cs  Start-up, tray icon, global shortcut, widget registration
 ```
 

@@ -1,0 +1,76 @@
+<UserControl x:Class="Glasspane.Widgets.NowPlaying.NowPlayingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{StaticResource TextBrush}"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <Style x:Key="MediaButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="16,2,16,14">
+        <!-- Shown when nothing is playing -->
+        <StackPanel x:Name="IdleState" Orientation="Horizontal" Visibility="Collapsed" Margin="0,4,0,4">
+            <TextBlock Text="&#xE8D6;" FontFamily="{StaticResource IconFont}" FontSize="18" Opacity="0.5"
+                       VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Text="Nothing playing" FontSize="13" Foreground="{StaticResource SubtleTextBrush}"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Grid x:Name="PlayingState">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Album art -->
+            <Border x:Name="ArtFrame" Width="76" Height="76" CornerRadius="8" Background="#1FFFFFFF"
+                    VerticalAlignment="Top" Margin="0,0,14,0">
+                <Grid>
+                    <TextBlock Text="&#xE8D6;" FontFamily="{StaticResource IconFont}" FontSize="24" Opacity="0.4"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border x:Name="ArtImage" CornerRadius="8" />
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="TitleText" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="ArtistText" FontSize="12" TextTrimming="CharacterEllipsis" Opacity="0.85" Margin="0,1,0,0" />
+                <TextBlock x:Name="SourceText" FontSize="10.5" Foreground="{StaticResource SubtleTextBrush}"
+                           TextTrimming="CharacterEllipsis" Margin="0,1,0,0" />
+
+                <!-- Progress -->
+                <Grid x:Name="ProgressRow" Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="PositionText" FontSize="10" Foreground="{StaticResource SubtleTextBrush}"
+                               VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Border x:Name="ProgressTrack" Grid.Column="1" Height="4" CornerRadius="2" Background="#26FFFFFF"
+                            VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="ProgressTrack_MouseLeftButtonDown">
+                        <Border x:Name="ProgressFill" HorizontalAlignment="Left" Width="0" CornerRadius="2"
+                                Background="{StaticResource AccentBrush}" />
+                    </Border>
+                    <TextBlock x:Name="DurationText" Grid.Column="2" FontSize="10" Foreground="{StaticResource SubtleTextBrush}"
+                               VerticalAlignment="Center" Margin="8,0,0,0" />
+                </Grid>
+
+                <!-- Controls -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
+                    <Button x:Name="PreviousButton" Style="{StaticResource MediaButton}" Content="&#xE892;"
+                            ToolTip="Previous" Click="Previous_Click" />
+                    <Button x:Name="PlayPauseButton" Style="{StaticResource MediaButton}" Content="&#xE768;" FontSize="18"
+                            ToolTip="Play / pause" Click="PlayPause_Click" Margin="6,0" />
+                    <Button x:Name="NextButton" Style="{StaticResource MediaButton}" Content="&#xE893;"
+                            ToolTip="Next" Click="Next_Click" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

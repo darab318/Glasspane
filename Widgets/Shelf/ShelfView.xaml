@@ -1,0 +1,101 @@
+<UserControl x:Class="Glasspane.Widgets.Shelf.ShelfView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{StaticResource TextBrush}"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <!-- Screenshots: two columns of thumbnails -->
+        <ItemsPanelTemplate x:Key="TilePanel">
+            <UniformGrid Columns="2" VerticalAlignment="Top" />
+        </ItemsPanelTemplate>
+        <DataTemplate x:Key="TileTemplate">
+            <Border x:Name="Card" Margin="0,0,6,6" CornerRadius="8" Background="{DynamicResource CardBackground}"
+                    BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" Padding="4" Cursor="Hand"
+                    ToolTip="{Binding Name}"
+                    MouseLeftButtonDown="Item_MouseLeftButtonDown" MouseMove="Item_MouseMove"
+                    MouseLeftButtonUp="Item_MouseLeftButtonUp" MouseRightButtonUp="Item_MouseRightButtonUp">
+                <StackPanel>
+                    <Border Height="92" CornerRadius="5">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding Thumbnail}" Stretch="UniformToFill" />
+                        </Border.Background>
+                    </Border>
+                    <TextBlock Text="{Binding TimeText}" FontSize="10.5" Foreground="{StaticResource SubtleTextBrush}"
+                               Margin="3,4,3,1" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <Trigger SourceName="Card" Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="#66FFFFFF" />
+                    <Setter TargetName="Card" Property="Background" Value="#26FFFFFF" />
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Downloads: a list with icons -->
+        <ItemsPanelTemplate x:Key="ListPanel">
+            <StackPanel />
+        </ItemsPanelTemplate>
+        <DataTemplate x:Key="RowTemplate">
+            <Border x:Name="Card" Margin="0,0,6,5" CornerRadius="7" Background="{DynamicResource CardBackground}"
+                    BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" Padding="8,6" Cursor="Hand"
+                    ToolTip="{Binding Path}"
+                    MouseLeftButtonDown="Item_MouseLeftButtonDown" MouseMove="Item_MouseMove"
+                    MouseLeftButtonUp="Item_MouseLeftButtonUp" MouseRightButtonUp="Item_MouseRightButtonUp">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Width="32" Height="32" CornerRadius="4" Margin="0,0,10,0">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding Thumbnail}" Stretch="UniformToFill" />
+                        </Border.Background>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding MetaText}" FontSize="10.5" Foreground="{StaticResource SubtleTextBrush}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <Trigger SourceName="Card" Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Card" Property="BorderBrush" Value="#66FFFFFF" />
+                    <Setter TargetName="Card" Property="Background" Value="#26FFFFFF" />
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="12,0,6,10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel x:Name="TopRow" Margin="0,0,6,8">
+            <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE838;"
+                    ToolTip="Open this folder" Click="OpenFolder_Click" />
+            <StackPanel Orientation="Horizontal">
+                <RadioButton x:Name="ScreenshotsTab" Style="{StaticResource Chip}" Content="Screenshots" GroupName="ShelfTabs"
+                             IsChecked="True" Checked="Tab_Checked" />
+                <RadioButton x:Name="DownloadsTab" Style="{StaticResource Chip}" Content="Downloads" GroupName="ShelfTabs"
+                             Checked="Tab_Checked" />
+            </StackPanel>
+        </DockPanel>
+
+        <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="Items" Focusable="False" />
+        </ScrollViewer>
+
+        <TextBlock x:Name="EmptyText" Grid.Row="1" TextWrapping="Wrap" TextAlignment="Center" FontSize="12"
+                   Foreground="{StaticResource SubtleTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Margin="16" Visibility="Collapsed" IsHitTestVisible="False" />
+
+        <Border x:Name="Toast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10"
+                Background="{StaticResource AccentBrush}" CornerRadius="14" Padding="14,6" Opacity="0" IsHitTestVisible="False">
+            <TextBlock x:Name="ToastText" Foreground="#FF0B1220" FontSize="12" FontWeight="SemiBold" />
+        </Border>
+    </Grid>
+</UserControl>

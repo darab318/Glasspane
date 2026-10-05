@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <!-- Windows 10 2004+ APIs (used for the media controls in Now Playing) -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <!-- WinForms is only used for the system tray icon -->
     <UseWindowsForms>true</UseWindowsForms>
