@@ -104,7 +104,7 @@ updates only when the track or play state changes.
 ## Weather
 
 Current conditions, the next 6 hours and the next 5 days, from Open-Meteo (free, no account). Set your
-town in the ⚙ menu (it starts on London), plus °C/°F, mph/km/h, and whether to show the hours and days.
+location in the ⚙ menu, plus °C/°F, mph/km/h, and whether to show the hours and days.
 It downloads a few kilobytes every 30 minutes, and only while the widget is showing.
 
 ## Notes
@@ -164,17 +164,6 @@ Glasspane is built to sit on your desktop all day without you noticing it:
 - `clipboard\images\`: copied images
 - `log.txt`: errors, useful if something misbehaves
 
-## Backups and version control (GitHub)
-
-- **First time:** double-click **GitHub-Setup.bat**. It installs Git and the GitHub tool if needed,
-  has you sign in to GitHub in your browser, and uploads the project to a new **private**
-  repository called `Glasspane` on your account.
-- **After that:** double-click **Save-Version.bat** whenever you want a backup (for example after a
-  new feature works). Type a short description and it's saved and uploaded.
-
-Every saved version is kept on GitHub, so you can see what changed and go back to any of them.
-Build output (`bin`, `obj`, `App`) isn't uploaded; it's rebuilt by Build.bat.
-
 ## How the code is organised
 
 ```
@@ -203,12 +192,3 @@ without writing any of that again.
 
 1. Create `Widgets/<Name>/<Name>Widget.cs` implementing `IWidget`, plus a `UserControl` for its UI.
 2. Register it in `App.OnStartup` with `_manager.Register(new <Name>Widget(context));`. It appears at the top of the first window, and can be split off from there.
-
-The ideas so far, and the approach for each:
-
-| Widget | Approach |
-|---|---|
-| Quick Claude chat | Anthropic Messages API with your own API key (billed separately from a claude.ai plan) |
-| AirPods battery | Read Apple's Bluetooth LE battery broadcast (see AirPodsDesktop) |
-| Phone | Android: KDE Connect protocol. iPhone: Bluetooth notification service (more limited) |
-| Proton VPN | Proton's WireGuard config files plus the official WireGuard client |
