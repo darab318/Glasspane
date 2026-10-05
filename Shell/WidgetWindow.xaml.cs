@@ -456,6 +456,13 @@ namespace Glasspane.Shell
             TitleBar.Cursor = _pinned && !locked ? Cursors.SizeAll : null;
         }
 
+        /// <summary>Re-applies the look after its settings were changed from outside (e.g. Settings → all widgets).</summary>
+        public void ReloadAppearance()
+        {
+            SyncAppearanceControls();
+            ApplyLook(animate: false);
+        }
+
         private void SyncAppearanceControls()
         {
             _loadingSlider = true;

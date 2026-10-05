@@ -15,6 +15,10 @@ Glasspane then runs in the system tray.
 
 When Glasspane starts, the **Settings** window opens with a tile for each widget. Click a tile to turn
 that widget on or off (lit up with a tick = on).
+**Appearance for all widgets** sets Background and Blur for every widget at once. Pick
+*On the desktop* or *As windows* first, since each mode has its own look. If widgets currently differ
+the value shows *Mixed*; moving the slider makes them all the same. Each widget's own ⚙ menu
+can still fine-tune it afterwards.
 It also has **Start Glasspane with Windows** and **Show this window when Glasspane starts**.
 Open it again any time from the tray icon (right-click → Settings and widgets), or by launching Glasspane again.
 

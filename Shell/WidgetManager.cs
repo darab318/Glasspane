@@ -94,6 +94,34 @@ namespace Glasspane.Shell
             window.Summon(widget);
         }
 
+        // ---------------------------------------------------------------- appearance for all
+
+        /// <summary>Every window's settings, including hidden ones.</summary>
+        public IEnumerable<WidgetSettings> AllWindowSettings => _windows.Select(w => w.Settings);
+
+        /// <summary>
+        /// Sets background and/or blur for every widget window at once, for one mode
+        /// (desktop or window). Each window can still be adjusted on its own afterwards.
+        /// </summary>
+        public void SetAppearanceForAll(bool desktopMode, double? opacity, double? blur)
+        {
+            foreach (var w in _windows)
+            {
+                var s = w.Settings;
+                if (desktopMode)
+                {
+                    if (opacity is double o) s.DesktopOpacity = o;
+                    if (blur is double b) s.DesktopBlurStrength = b;
+                }
+                else
+                {
+                    if (opacity is double o) s.BackgroundOpacity = o;
+                    if (blur is double b) s.BlurStrength = b;
+                }
+                w.ReloadAppearance();
+            }
+        }
+
         // ---------------------------------------------------------------- on / off
 
         /// <summary>True if the widget is currently showing (on the desktop or as a window).</summary>

@@ -29,6 +29,8 @@
     <ServerGarbageCollector>false</ServerGarbageCollector>
     <!-- Only ship English resources -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- WFAC010 is a Windows Forms hint; this is a WPF app (WinForms is only the tray icon), so the manifest DPI setting is correct -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

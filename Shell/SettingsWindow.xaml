@@ -140,6 +140,43 @@
 
             <Border Height="1" Background="{StaticResource StrokeBrush}" Margin="0,0,12,16" />
 
+            <!-- Appearance for every widget at once -->
+            <TextBlock Text="Appearance for all widgets" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <RadioButton x:Name="DesktopModeChip" Style="{StaticResource Chip}" Content="On the desktop"
+                             GroupName="AppearanceMode" IsChecked="True" Checked="AppearanceMode_Checked" />
+                <RadioButton x:Name="WindowModeChip" Style="{StaticResource Chip}" Content="As windows"
+                             GroupName="AppearanceMode" Checked="AppearanceMode_Checked" />
+            </StackPanel>
+
+            <Grid Margin="0,0,12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="64" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32" />
+                    <RowDefinition Height="32" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Background" FontSize="12" VerticalAlignment="Center" />
+                <Slider x:Name="AllOpacitySlider" Grid.Column="1" Style="{StaticResource GlassSlider}" Minimum="0" Maximum="100"
+                        SmallChange="1" LargeChange="10" VerticalAlignment="Center" ValueChanged="AllOpacitySlider_ValueChanged" />
+                <TextBlock x:Name="AllOpacityValue" Grid.Column="2" FontSize="12" TextAlignment="Right" VerticalAlignment="Center"
+                           Foreground="{StaticResource SubtleTextBrush}" />
+
+                <TextBlock Grid.Row="1" Text="Blur" FontSize="12" VerticalAlignment="Center" />
+                <Slider x:Name="AllBlurSlider" Grid.Row="1" Grid.Column="1" Style="{StaticResource GlassSlider}" Minimum="0" Maximum="100"
+                        SmallChange="1" LargeChange="10" VerticalAlignment="Center" ValueChanged="AllBlurSlider_ValueChanged" />
+                <TextBlock x:Name="AllBlurValue" Grid.Row="1" Grid.Column="2" FontSize="12" TextAlignment="Right" VerticalAlignment="Center"
+                           Foreground="{StaticResource SubtleTextBrush}" />
+            </Grid>
+            <TextBlock x:Name="AppearanceNote" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource SubtleTextBrush}"
+                       Margin="0,6,12,18" />
+
+            <Border Height="1" Background="{StaticResource StrokeBrush}" Margin="0,0,12,16" />
+
             <TextBlock Text="General" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" />
             <CheckBox x:Name="StartupToggle" Style="{StaticResource ToggleSwitch}" Content="Start Glasspane with Windows"
                       FontSize="12" Margin="0,0,12,10" Click="StartupToggle_Click" />
